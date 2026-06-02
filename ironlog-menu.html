@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鐵記 · 菜單設定</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0c0c0e;--surface:#141417;--surface-2:#191a1e;--elevated:#212127;
+    --line:rgba(255,255,255,.07);--line-strong:rgba(255,255,255,.13);
+    --text:#f5f4f1;--muted:#8b8b93;--faint:#56565e;
+    --accent:#ff6a1a;--accent-2:#ff8c42;--accent-soft:rgba(255,106,26,.13);
+    --pr:#c6ff3a;--mono:'JetBrains Mono',monospace;--sans:'Archivo',sans-serif;
+  }
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(900px 600px at 88% -8%, rgba(255,106,26,.16), transparent 60%),radial-gradient(700px 500px at -5% 105%, rgba(255,106,26,.05), transparent 55%)}
+  body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 20%,transparent 75%)}
+  .wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:26px 18px 110px}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:11px;margin-bottom:24px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .mark{width:38px;height:38px;border-radius:10px;position:relative;flex-shrink:0;background:linear-gradient(150deg,var(--accent),#e0480a);box-shadow:0 6px 20px rgba(255,106,26,.35),inset 0 1px 0 rgba(255,255,255,.3)}
+  .mark::before,.mark::after{content:"";position:absolute;background:#0c0c0e;border-radius:2px}
+  .mark::before{width:5px;height:18px;left:9px;top:10px}.mark::after{width:5px;height:18px;right:9px;top:10px}
+  .mark span{position:absolute;width:14px;height:5px;background:#0c0c0e;top:16px;left:12px}
+  .topbar h1{font-size:18px;font-weight:900;letter-spacing:.18em;line-height:1}
+  .topbar .sub{font-family:var(--mono);font-size:9px;letter-spacing:.32em;color:var(--accent-2);margin-top:3px;font-weight:500}
+  .nav-btn{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--accent-2);border:1px solid rgba(255,106,26,.3);background:var(--accent-soft);padding:8px 12px;border-radius:10px;text-decoration:none;display:flex;align-items:center;gap:6px;transition:all .18s;white-space:nowrap}
+  .nav-btn:hover{background:rgba(255,106,26,.2);transform:translateY(-1px)}
+  .nav-btn svg{width:14px;height:14px;stroke-width:2.5}
+
+  .page-title{font-family:var(--mono);font-size:11px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+  .page-title::before{content:"";width:18px;height:2px;background:var(--accent)}
+
+  .hero{background:linear-gradient(160deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:20px;padding:18px 22px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;top:-40%;right:-15%;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,var(--accent-soft),transparent 70%)}
+  .hero .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.28em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+  .name-input{background:none;border:none;color:var(--text);font-family:var(--sans);font-size:26px;font-weight:900;letter-spacing:-.01em;width:100%;outline:none;padding:2px 0;border-bottom:1px solid var(--line);transition:border-color .2s}
+  .name-input:focus{border-bottom-color:var(--accent)}
+
+  .section-label{font-size:13px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;padding:0 2px}
+  .section-label .hint{font-family:var(--mono);font-size:9px;font-weight:400;color:var(--faint);letter-spacing:.1em;text-transform:uppercase}
+
+  .menu-card{background:var(--surface);border:1px solid var(--line);border-radius:18px;margin-bottom:12px;overflow:hidden;transition:border-color .2s}
+  .menu-card:hover{border-color:var(--line-strong)}
+  .mc-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 12px;border-bottom:1px solid var(--line)}
+  .mc-head .left{display:flex;align-items:center;gap:11px;flex:1;min-width:0}
+  .mc-code{width:34px;height:34px;border-radius:10px;background:var(--accent-soft);border:1px solid rgba(255,106,26,.25);display:grid;place-items:center;font-size:16px;font-weight:900;color:var(--accent-2);flex-shrink:0}
+  .mc-name{background:none;border:none;color:var(--text);font-family:var(--sans);font-size:17px;font-weight:800;outline:none;width:100%;border-bottom:1px solid transparent;padding-bottom:1px}
+  .mc-name:focus{border-bottom-color:var(--accent)}
+  .mc-del{background:none;border:none;color:var(--faint);cursor:pointer;padding:6px;border-radius:8px;transition:all .15s;flex-shrink:0}
+  .mc-del:hover{color:#ff5a5a;background:rgba(255,90,90,.1)}
+  .mc-del svg{width:17px;height:17px;stroke-width:2;display:block}
+
+  .ex-item{padding:12px 16px;display:flex;flex-direction:column;gap:9px}
+  .ex-item+.ex-item{border-top:1px solid var(--line)}
+  .ex-top{display:flex;align-items:center;gap:9px}
+  .grip{color:var(--faint);flex-shrink:0;display:flex;flex-direction:column;gap:2.5px;padding:3px;cursor:grab}
+  .grip i{width:12px;height:1.6px;background:currentColor;border-radius:2px;display:block}
+  .part-tag{flex-shrink:0;font-family:var(--mono);font-size:10px;font-weight:800;letter-spacing:.04em;color:var(--accent-2);background:var(--accent-soft);border:1px solid rgba(255,106,26,.25);border-radius:7px;padding:6px 7px;min-width:30px;text-align:center}
+  .part-tag.none{color:var(--faint);background:var(--elevated);border-color:var(--line)}
+  .name-field{flex:1;min-width:0;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;cursor:pointer;font-family:var(--sans);font-size:15px;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:space-between;gap:8px;transition:border-color .15s}
+  .name-field:hover{border-color:var(--accent)}
+  .name-field.empty{color:var(--faint);font-weight:500}
+  .name-field .chev{flex-shrink:0;color:var(--faint)}
+  .name-field .chev svg{width:15px;height:15px;stroke-width:2.5;display:block}
+  .ex-rm{background:none;border:none;color:var(--faint);cursor:pointer;font-size:18px;padding:2px 5px;border-radius:7px;flex-shrink:0;line-height:1;transition:all .15s}
+  .ex-rm:hover{color:#ff5a5a;background:rgba(255,90,90,.1)}
+  .targets{display:flex;gap:7px;padding-left:42px}
+  .tcell{display:flex;align-items:center;gap:3px;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;padding:6px 9px;transition:border-color .15s}
+  .tcell:focus-within{border-color:var(--accent)}
+  .tcell input{background:none;border:none;color:var(--text);font-family:var(--mono);font-size:14px;font-weight:700;outline:none;text-align:center;width:26px;font-variant-numeric:tabular-nums}
+  .tcell.w input{width:42px}
+  .tcell .lab{font-family:var(--mono);font-size:9px;color:var(--faint);font-weight:500}
+
+  .add-ex{width:100%;background:none;border:none;border-top:1px solid var(--line);color:var(--muted);font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.12em;padding:11px;cursor:pointer;transition:all .18s;text-transform:uppercase}
+  .add-ex:hover{background:var(--elevated);color:var(--accent-2)}
+  .cap-hint{text-align:center;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--faint);padding:11px;border-top:1px solid var(--line)}
+
+  .add-menu{width:100%;background:var(--surface);border:1px dashed var(--line-strong);border-radius:16px;color:var(--muted);font-family:var(--sans);font-size:14px;font-weight:600;padding:16px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:2px}
+  .add-menu:hover{border-color:var(--accent);color:var(--accent-2);background:var(--accent-soft)}
+  .add-menu svg{width:18px;height:18px;stroke-width:2.5}
+  .menu-cap{text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--faint);padding:16px;border:1px dashed var(--line);border-radius:16px;margin-top:2px}
+
+  /* save bar */
+  .savebar{position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:30;width:100%;max-width:560px;background:linear-gradient(180deg,transparent,var(--bg) 32%);padding:26px 18px 18px}
+  .save-btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;background:linear-gradient(150deg,var(--accent),#e0480a);color:#0c0c0e;font-family:var(--sans);font-size:15px;font-weight:800;letter-spacing:.04em;border:none;border-radius:14px;padding:15px;cursor:pointer;box-shadow:0 8px 28px rgba(255,106,26,.35);transition:transform .15s,box-shadow .2s}
+  .save-btn:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(255,106,26,.5)}
+  .save-btn svg{width:18px;height:18px;stroke-width:3}
+  .save-btn.ok{background:linear-gradient(150deg,var(--pr),#9fd400)}
+
+  /* picker */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);backdrop-filter:blur(4px);z-index:50;opacity:0;pointer-events:none;transition:opacity .25s}
+  .overlay.show{opacity:1;pointer-events:auto}
+  .sheet{position:absolute;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;background:var(--surface);border:1px solid var(--line-strong);border-bottom:none;border-radius:22px 22px 0 0;max-height:80vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .3s cubic-bezier(.34,1.4,.64,1)}
+  .overlay.show .sheet{transform:none}
+  .sheet-head{display:flex;align-items:center;justify-content:space-between;padding:18px 18px 12px}
+  .sheet-head h3{font-size:16px;font-weight:800;letter-spacing:.02em}
+  .sheet-head .x{background:var(--elevated);border:none;color:var(--muted);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:18px;line-height:1}
+  .search{margin:0 18px 12px;display:flex;align-items:center;gap:9px;background:var(--surface-2);border:1px solid var(--line);border-radius:11px;padding:0 13px}
+  .search:focus-within{border-color:var(--accent)}
+  .search svg{width:16px;height:16px;stroke-width:2;color:var(--faint);flex-shrink:0}
+  .search input{flex:1;background:none;border:none;color:var(--text);font-family:var(--sans);font-size:15px;outline:none;padding:12px 0}
+  .list{overflow-y:auto;padding:0 12px 18px;flex:1}
+  .grp-label{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--faint);text-transform:uppercase;padding:12px 8px 6px}
+  .opt{padding:12px 14px;border-radius:10px;cursor:pointer;font-size:15px;font-weight:600;transition:background .12s;display:flex;align-items:center;gap:9px}
+  .opt:hover{background:var(--elevated)}
+  .opt .ot{font-family:var(--mono);font-size:9px;font-weight:800;color:var(--accent-2);background:var(--accent-soft);border-radius:5px;padding:2px 5px}
+  .custom-box{margin:6px 8px 4px;padding:12px;background:var(--elevated);border-radius:12px}
+  .custom-box .ct{font-size:14px;font-weight:700;margin-bottom:10px}
+  .custom-box .ct b{color:var(--accent-2)}
+  .custom-box .pp{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+  .part-chips{display:flex;flex-wrap:wrap;gap:7px}
+  .pchip{font-family:var(--sans);font-size:13px;font-weight:700;color:var(--text);background:var(--surface);border:1px solid var(--line-strong);border-radius:9px;padding:8px 13px;cursor:pointer;transition:all .15s}
+  .pchip:hover{border-color:var(--accent);color:var(--accent-2);background:var(--accent-soft)}
+
+  .reveal{opacity:0;transform:translateY(14px);animation:rise .6s cubic-bezier(.22,1,.36,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar reveal" style="animation-delay:.02s">
+    <div class="brand">
+      <div class="mark"><span></span></div>
+      <div><h1>鐵記</h1><div class="sub">IRONLOG</div></div>
+    </div>
+    <a class="nav-btn" href="ironlog-train.html">訓練頁面
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+
+  <div class="page-title reveal" style="animation-delay:.06s">菜單設定 · MENU SETUP</div>
+
+  <div class="section-label reveal" style="animation-delay:.12s">訓練內容 <span class="hint" id="menuCount">0 / 5 份 · 每份最多 10 動作</span></div>
+  <div id="menuList"></div>
+  <div id="addZone" class="reveal" style="animation-delay:.24s"></div>
+
+</div>
+
+<div class="savebar">
+  <button class="save-btn" id="saveBtn" onclick="save()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+    儲存菜單
+  </button>
+</div>
+
+<div class="overlay" id="overlay" onclick="if(event.target===this)closePicker()">
+  <div class="sheet">
+    <div class="sheet-head"><h3>選擇動作</h3><button class="x" onclick="closePicker()">×</button></div>
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+      <input id="pickSearch" placeholder="搜尋，或輸入自訂名稱" oninput="renderOptions(this.value)">
+    </div>
+    <div class="list" id="optList"></div>
+  </div>
+</div>
+
+<script>
+const MAX_MENU=5, MAX_EX=10;
+const PARTS=["胸","背","肩","腿","臀","手臂","核心"];
+const EX_PRESETS={
+  "胸":["槓鈴臥推","啞鈴臥推","上斜啞鈴臥推","啞鈴飛鳥","繩索夾胸","伏地挺身"],
+  "背":["引體向上","滑輪下拉","槓鈴划船","啞鈴划船","坐姿划船","直臂下壓","硬舉"],
+  "肩":["槓鈴肩推","啞鈴肩推","側平舉","後三角飛鳥","面拉"],
+  "腿":["槓鈴深蹲","前蹲","腿推","腿屈伸","腿後勾","小腿提踵"],
+  "臀":["臀推","羅馬尼亞硬舉","早安體前屈","後踢腿"],
+  "手臂":["二頭彎舉","錘式彎舉","繩索下壓","三頭伸展","窄握臥推"],
+  "核心":["棒式","捲腹","懸吊抬腿","俄羅斯轉體"]
+};
+
+let menus=[
+  {name:"上肢日",ex:[
+    {name:"槓鈴臥推",part:"胸",w:80,sets:4,reps:8},{name:"槓鈴划船",part:"背",w:70,sets:4,reps:8},
+    {name:"啞鈴肩推",part:"肩",w:24,sets:3,reps:10},{name:"滑輪下拉",part:"背",w:50,sets:3,reps:12}]},
+  {name:"下肢日",ex:[
+    {name:"槓鈴深蹲",part:"腿",w:100,sets:4,reps:6},{name:"羅馬尼亞硬舉",part:"臀",w:80,sets:3,reps:8},
+    {name:"腿推",part:"腿",w:140,sets:3,reps:12},{name:"臀推",part:"臀",w:90,sets:3,reps:12}]},
+  {name:"全身日",ex:[
+    {name:"槓鈴深蹲",part:"腿",w:90,sets:3,reps:8},{name:"槓鈴臥推",part:"胸",w:75,sets:3,reps:8},
+    {name:"槓鈴划船",part:"背",w:65,sets:3,reps:10}]}
+];
+
+function render(){
+  const list=document.getElementById('menuList');list.innerHTML='';
+  menus.forEach((m,mi)=>{
+    const card=document.createElement('div');
+    card.className='menu-card reveal';card.style.animationDelay=(0.18+mi*0.05)+'s';
+    let rows='';
+    m.ex.forEach((x,xi)=>{
+      const empty=x.name?'':' empty';
+      const ptag=x.part?`<div class="part-tag">${x.part}</div>`:`<div class="part-tag none">—</div>`;
+      rows+=`<div class="ex-item">
+        <div class="ex-top">
+          <div class="grip"><i></i><i></i><i></i></div>
+          ${ptag}
+          <button class="name-field${empty}" onclick="openPicker(${mi},${xi})">
+            <span>${x.name||'選擇或輸入動作'}</span>
+            <span class="chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6"/></svg></span>
+          </button>
+          <button class="ex-rm" onclick="rmEx(${mi},${xi})">×</button>
+        </div>
+        <div class="targets">
+          <div class="tcell w"><input value="${x.w}" inputmode="decimal" onchange="updEx(${mi},${xi},'w',this.value)"><span class="lab">kg</span></div>
+          <div class="tcell"><input value="${x.sets}" inputmode="numeric" onchange="updEx(${mi},${xi},'sets',this.value)"><span class="lab">組</span></div>
+          <div class="tcell"><input value="${x.reps}" inputmode="numeric" onchange="updEx(${mi},${xi},'reps',this.value)"><span class="lab">次</span></div>
+        </div>
+      </div>`;
+    });
+    const foot = m.ex.length<MAX_EX
+      ? `<button class="add-ex" onclick="addEx(${mi})">+ 新增動作</button>`
+      : `<div class="cap-hint">已達上限 · 最多 10 個動作</div>`;
+    card.innerHTML=`
+      <div class="mc-head">
+        <div class="left">
+          <div class="mc-code">${(m.name||'?').slice(0,1)}</div>
+          <div style="flex:1;min-width:0"><input class="mc-name" value="${m.name}" placeholder="菜單名稱" onchange="updMenu(${mi},this.value)"></div>
+        </div>
+        <button class="mc-del" onclick="rmMenu(${mi})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg></button>
+      </div>
+      ${rows}${foot}`;
+    list.appendChild(card);
+  });
+  const zone=document.getElementById('addZone');
+  zone.innerHTML = menus.length<MAX_MENU
+    ? `<button class="add-menu" onclick="addMenu()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 5v14M5 12h14"/></svg>新增訓練內容</button>`
+    : `<div class="menu-cap">已達上限 · 最多 5 份菜單</div>`;
+  document.getElementById('menuCount').textContent=menus.length+' / 5 份 · 每份最多 10 動作';
+}
+function updMenu(mi,v){menus[mi].name=v;dirty();render();}
+function updEx(mi,xi,k,v){menus[mi].ex[xi][k]=v;dirty();}
+function rmEx(mi,xi){menus[mi].ex.splice(xi,1);dirty();render();}
+function addEx(mi){if(menus[mi].ex.length<MAX_EX){menus[mi].ex.push({name:"",part:"",w:20,sets:3,reps:10});dirty();render();}}
+function rmMenu(mi){if(menus.length>1){menus.splice(mi,1);dirty();render();}}
+function addMenu(){if(menus.length<MAX_MENU){menus.push({name:"新訓練內容",ex:[{name:"",part:"",w:20,sets:3,reps:10}]});dirty();render();}}
+
+// ---- localStorage 資料層 ----
+const LS_KEY='ironlog.menus';
+(function loadMenus(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(raw){const p=JSON.parse(raw);if(Array.isArray(p)&&p.length)menus=p;}
+    else{localStorage.setItem(LS_KEY,JSON.stringify(menus));} // 首次開啟：用內建示範菜單種子寫入一次
+  }catch(e){}
+})();
+
+// save
+function dirty(){const b=document.getElementById('saveBtn');b.classList.remove('ok');b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>儲存菜單`;}
+function save(){try{localStorage.setItem(LS_KEY,JSON.stringify(menus));}catch(e){}const b=document.getElementById('saveBtn');b.classList.add('ok');b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 13l4 4L19 7"/></svg>已儲存`;}
+
+// picker
+let pick={mi:null,xi:null};
+function openPicker(mi,xi){pick={mi,xi};document.getElementById('pickSearch').value='';renderOptions('');document.getElementById('overlay').classList.add('show');setTimeout(()=>document.getElementById('pickSearch').focus(),250);}
+function closePicker(){document.getElementById('overlay').classList.remove('show');}
+function choose(name,part){if(pick.mi===null)return;menus[pick.mi].ex[pick.xi].name=name;menus[pick.mi].ex[pick.xi].part=part;closePicker();dirty();render();}
+function renderOptions(filter){
+  const q=(filter||'').trim();
+  const box=document.getElementById('optList');
+  let html='';
+  if(q){
+    const exists=Object.values(EX_PRESETS).some(arr=>arr.includes(q));
+    if(!exists){
+      const qe=q.replace(/'/g,"\\'");
+      html+=`<div class="custom-box"><div class="ct">使用自訂：<b>${q}</b></div><div class="pp">選擇部位</div><div class="part-chips">`;
+      PARTS.forEach(p=>{html+=`<div class="pchip" onclick="choose('${qe}','${p}')">${p}</div>`;});
+      html+=`</div></div>`;
+    }
+  }
+  PARTS.forEach(p=>{
+    const items=(EX_PRESETS[p]||[]).filter(n=>!q||n.includes(q));
+    if(items.length){
+      html+=`<div class="grp-label">${p}</div>`;
+      items.forEach(n=>{html+=`<div class="opt" onclick="choose('${n}','${p}')"><span class="ot">${p}</span>${n}</div>`;});
+    }
+  });
+  if(!html)html=`<div class="grp-label">沒有符合的動作，可直接輸入自訂名稱</div>`;
+  box.innerHTML=html;
+}
+
+render();
+</script>
+</body>
+</html>

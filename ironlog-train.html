@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>鐵記 · 今日訓練</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg:#0c0c0e;--surface:#141417;--surface-2:#191a1e;--elevated:#212127;
+    --line:rgba(255,255,255,.07);--line-strong:rgba(255,255,255,.13);
+    --text:#f5f4f1;--muted:#8b8b93;--faint:#56565e;
+    --accent:#ff6a1a;--accent-2:#ff8c42;--accent-soft:rgba(255,106,26,.13);
+    --pr:#c6ff3a;--mono:'JetBrains Mono',monospace;--sans:'Archivo',sans-serif;
+  }
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;position:relative;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(900px 600px at 88% -8%, rgba(255,106,26,.16), transparent 60%),radial-gradient(700px 500px at -5% 105%, rgba(255,106,26,.05), transparent 55%)}
+  body::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 20%,transparent 75%)}
+  .wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:26px 18px 130px}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;gap:12px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .mark{width:38px;height:38px;border-radius:10px;position:relative;flex-shrink:0;background:linear-gradient(150deg,var(--accent),#e0480a);box-shadow:0 6px 20px rgba(255,106,26,.35),inset 0 1px 0 rgba(255,255,255,.3)}
+  .mark::before,.mark::after{content:"";position:absolute;background:#0c0c0e;border-radius:2px}
+  .mark::before{width:5px;height:18px;left:9px;top:10px}.mark::after{width:5px;height:18px;right:9px;top:10px}
+  .mark span{position:absolute;width:14px;height:5px;background:#0c0c0e;top:16px;left:12px}
+  .brand h1{font-size:18px;font-weight:900;letter-spacing:.18em;line-height:1}
+  .brand .sub{font-family:var(--mono);font-size:9px;letter-spacing:.32em;color:var(--accent-2);margin-top:3px;font-weight:500}
+  .top-right{display:flex;align-items:center;gap:10px}
+  .date{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.04em}
+  .nav-btn{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--accent-2);border:1px solid rgba(255,106,26,.3);background:var(--accent-soft);padding:8px 12px;border-radius:10px;text-decoration:none;display:flex;align-items:center;gap:6px;transition:all .18s;white-space:nowrap}
+  .nav-btn:hover{background:rgba(255,106,26,.2);transform:translateY(-1px)}
+  .nav-btn svg{width:14px;height:14px;stroke-width:2.5}
+
+  .hero{background:linear-gradient(160deg,var(--surface-2),var(--surface));border:1px solid var(--line);border-radius:20px;padding:22px 22px 18px;margin-bottom:22px;position:relative;overflow:hidden}
+  .hero::before{content:"";position:absolute;top:-40%;right:-15%;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,var(--accent-soft),transparent 70%)}
+  .hero-label{font-family:var(--mono);font-size:10px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:7px}
+  .hero-label .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent);animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  .tonnage{display:flex;align-items:baseline;gap:8px;margin-top:6px}
+  .tonnage .num{font-size:58px;font-weight:900;line-height:.9;letter-spacing:-.03em;font-variant-numeric:tabular-nums;background:linear-gradient(180deg,#fff,#cfcfca);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .tonnage .unit{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--accent-2)}
+  .hero-row{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+  .hero-row .v{font-family:var(--mono);font-size:19px;font-weight:800}.hero-row .v small{color:var(--faint);font-size:11px;font-weight:500}
+  .hero-row .k{font-size:10px;color:var(--muted);margin-top:3px;letter-spacing:.04em}
+
+  .breakdown{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+  .breakdown .bl{font-family:var(--mono);font-size:9px;letter-spacing:.22em;color:var(--faint);text-transform:uppercase;margin-bottom:11px}
+  .bd-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+  .bd-row:last-child{margin-bottom:0}
+  .bd-part{font-family:var(--sans);font-size:12px;font-weight:800;width:26px;flex-shrink:0;color:var(--text)}
+  .bd-track{flex:1;height:7px;background:var(--elevated);border-radius:4px;overflow:hidden}
+  .bd-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0;transition:width .55s cubic-bezier(.22,1,.36,1)}
+  .bd-val{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--muted);width:64px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+  .bd-val b{color:var(--text)}
+
+  .picker-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.26em;color:var(--muted);text-transform:uppercase;margin-bottom:10px;padding:0 2px}
+  .chips{display:flex;gap:9px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding-bottom:6px;margin-bottom:18px}
+  .chips::-webkit-scrollbar{height:0}
+  .chip{flex:0 0 calc(50% - 5px);scroll-snap-align:start;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:13px 16px;cursor:pointer;transition:all .18s}
+  .chip:hover{border-color:var(--line-strong)}
+  .chip .cn{font-size:15px;font-weight:800}
+  .chip .cm{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:3px;letter-spacing:.04em}
+  .chip.active{background:linear-gradient(160deg,rgba(255,106,26,.2),var(--surface));border-color:rgba(255,106,26,.45)}
+  .chip.active .cn{color:var(--accent-2)}.chip.active .cm{color:var(--accent)}
+
+  .exercise{background:var(--surface);border:1px solid var(--line);border-radius:18px;margin-bottom:12px;overflow:hidden;transition:border-color .2s}
+  .exercise:hover{border-color:var(--line-strong)}
+  .ex-head{display:flex;align-items:center;justify-content:space-between;padding:15px 17px 12px}
+  .ex-head .name{font-size:16px;font-weight:700;display:flex;align-items:center;gap:9px}
+  .ex-head .name .pt{font-family:var(--mono);font-size:9px;font-weight:800;color:var(--accent-2);background:var(--accent-soft);border-radius:5px;padding:3px 6px}
+  .ex-head .target{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em;background:var(--elevated);padding:5px 9px;border-radius:7px}
+  .grid-head{display:grid;grid-template-columns:42px 1fr 1fr 56px 44px;gap:8px;padding:4px 17px;align-items:center}
+  .grid-head span{font-family:var(--mono);font-size:9px;letter-spacing:.16em;color:var(--faint);text-transform:uppercase;text-align:center}
+  .grid-head span:first-child{text-align:left;padding-left:6px}
+
+  .set-row{display:grid;grid-template-columns:42px 1fr 1fr 56px 44px;gap:8px;padding:8px 17px;align-items:center;position:relative;transition:background-color .25s ease}
+  .set-row+.set-row{border-top:1px solid var(--line)}
+  .set-row>*{position:relative;z-index:1}
+  .set-row::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--accent-soft),transparent 78%);opacity:0;transition:opacity .3s ease;z-index:0;pointer-events:none}
+  .set-row.done::after{opacity:1}
+  .set-row::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);opacity:0;transition:opacity .3s ease;z-index:2}
+  .set-row.done::before{opacity:1}
+  .set-no{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--muted);padding-left:6px;font-variant-numeric:tabular-nums;transition:color .25s}
+  .set-row.done .set-no{color:var(--accent-2)}
+  .val{font-family:var(--mono);font-size:16px;font-weight:700;text-align:center;font-variant-numeric:tabular-nums;display:flex;align-items:baseline;justify-content:center;gap:3px}
+  .val small{font-size:10px;color:var(--faint);font-weight:500}
+  .cell{display:flex;align-items:center;justify-content:center;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;height:40px;transition:border-color .15s}
+  .cell:focus-within{border-color:var(--accent)}
+  .cell input{width:100%;background:none;border:none;color:var(--text);font-family:var(--mono);font-size:15px;font-weight:700;text-align:center;outline:none;min-width:0}
+  .check{width:40px;height:40px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface-2);display:grid;place-items:center;cursor:pointer;color:var(--faint);
+    transition:background-color .25s ease, border-color .25s ease, color .25s ease, transform .12s ease}
+  .check svg{width:18px;height:18px;stroke-width:3;transition:transform .25s cubic-bezier(.34,1.56,.64,1);transform:scale(.7);opacity:.5}
+  .check:hover{border-color:var(--accent);color:var(--muted)}
+  .check:active{transform:scale(.9)}
+  .set-row.done .check{background:var(--accent);border-color:var(--accent);color:#0c0c0e}
+  .set-row.done .check svg{transform:scale(1);opacity:1}
+
+  .savebar{position:fixed;left:50%;bottom:0;transform:translateX(-50%);z-index:30;width:100%;max-width:560px;background:linear-gradient(180deg,transparent,var(--bg) 28%);padding:30px 18px 18px}
+  .savebar-inner{background:rgba(20,20,23,.94);backdrop-filter:blur(16px);border:1px solid var(--line-strong);border-radius:16px;padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 12px 40px rgba(0,0,0,.55)}
+  .savebar .prog{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em}
+  .savebar .prog b{color:var(--accent-2);font-weight:700;font-size:14px}
+  .done-btn{background:linear-gradient(150deg,var(--accent),#e0480a);color:#0c0c0e;font-family:var(--sans);font-size:15px;font-weight:800;letter-spacing:.04em;border:none;border-radius:12px;padding:13px 26px;cursor:pointer;transition:transform .15s,box-shadow .2s;box-shadow:0 4px 16px rgba(255,106,26,.3);display:flex;align-items:center;gap:7px}
+  .done-btn:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(255,106,26,.45)}
+  .done-btn:active{transform:translateY(0)}
+  .done-btn svg{width:16px;height:16px;stroke-width:3}
+  .done-btn.ok{background:linear-gradient(150deg,var(--pr),#9fd400)}
+  .toast{font-family:var(--mono);font-size:11px;letter-spacing:.03em;color:var(--pr);text-align:center;margin-top:10px;opacity:0;transition:opacity .3s}
+  .toast.show{opacity:1}.toast.err{color:#ff7a7a}
+
+  .reveal{opacity:0;transform:translateY(14px);animation:rise .6s cubic-bezier(.22,1,.36,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar reveal" style="animation-delay:.02s">
+    <div class="brand">
+      <div class="mark"><span></span></div>
+      <div><h1>鐵記</h1><div class="sub">IRONLOG</div></div>
+    </div>
+    <div class="top-right">
+      <span class="date" id="date">—</span>
+      <a class="nav-btn" href="ironlog-menu.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>菜單頁面</a>
+    </div>
+  </div>
+
+  <div class="hero reveal" style="animation-delay:.08s">
+    <div class="hero-label"><span class="dot"></span>今日訓練總量 · TODAY VOLUME</div>
+    <div class="tonnage"><span class="num" id="tonnage">0</span><span class="unit">kg</span></div>
+    <div class="hero-row">
+      <div><div class="v" id="doneStat">0<small> / 0 組</small></div><div class="k">完成組數</div></div>
+    </div>
+    <div class="breakdown" id="breakdown"></div>
+  </div>
+
+  <div class="picker-lbl reveal" style="animation-delay:.12s">今天訓練選擇 · SELECT MENU</div>
+  <div class="chips reveal" id="chips" style="animation-delay:.14s"></div>
+
+  <div id="exList"></div>
+
+</div>
+
+<div class="savebar">
+  <div class="savebar-inner">
+    <div class="prog">完成進度 <b id="pDone">0</b> / <span id="pTotal">0</span> 組</div>
+    <button class="done-btn" id="doneBtn" onclick="complete()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 13l4 4L19 7"/></svg>完成</button>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const PARTS=["胸","背","肩","腿","臀","手臂","核心"];
+let MENUS=[
+  {name:"上肢日",ex:[
+    {name:"槓鈴臥推",part:"胸",w:80,sets:4,reps:8},{name:"槓鈴划船",part:"背",w:70,sets:4,reps:8},
+    {name:"啞鈴肩推",part:"肩",w:24,sets:3,reps:10},{name:"滑輪下拉",part:"背",w:50,sets:3,reps:12}]},
+  {name:"下肢日",ex:[
+    {name:"槓鈴深蹲",part:"腿",w:100,sets:4,reps:6},{name:"羅馬尼亞硬舉",part:"臀",w:80,sets:3,reps:8},
+    {name:"腿推",part:"腿",w:140,sets:3,reps:12},{name:"臀推",part:"臀",w:90,sets:3,reps:12}]},
+  {name:"全身日",ex:[
+    {name:"槓鈴深蹲",part:"腿",w:90,sets:3,reps:8},{name:"槓鈴臥推",part:"胸",w:75,sets:3,reps:8},
+    {name:"槓鈴划船",part:"背",w:65,sets:3,reps:10}]}
+];
+
+let sel=0, done={}, rpe={}, curTon=0, curParts=[];
+
+function renderChips(){
+  const c=document.getElementById('chips');c.innerHTML='';
+  MENUS.forEach((m,i)=>{
+    const el=document.createElement('div');
+    el.className='chip'+(i===sel?' active':'');
+    el.onclick=()=>{sel=i;done={};rpe={};curTon=0;renderMenu();renderChips();};
+    el.innerHTML=`<div class="cn">${m.name}</div><div class="cm">${m.ex.length} 動作</div>`;
+    c.appendChild(el);
+  });
+}
+
+function renderMenu(){
+  const m=MENUS[sel];
+  const list=document.getElementById('exList');list.innerHTML='';
+  m.ex.forEach((x,ei)=>{
+    const card=document.createElement('div');
+    card.className='exercise reveal';card.style.animationDelay=(0.16+ei*0.04)+'s';
+    let rows='';
+    for(let si=0;si<(+x.sets||0);si++){
+      const k=ei+'-'+si, isDone=done[k];
+      rows+=`<div class="set-row ${isDone?'done':''}" data-k="${k}">
+        <div class="set-no">${si+1}</div>
+        <div class="val">${x.w}<small>kg</small></div>
+        <div class="val">${x.reps}<small>次</small></div>
+        <div class="cell"><input inputmode="decimal" placeholder="—" value="${rpe[k]||''}" onchange="setRpe(${ei},${si},this.value)"></div>
+        <div class="check" onclick="toggle(${ei},${si})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 13l4 4L19 7"/></svg></div>
+      </div>`;
+    }
+    card.innerHTML=`
+      <div class="ex-head"><div class="name">${x.name}<span class="pt">${x.part||'—'}</span></div><div class="target">${x.w}kg · ${x.sets}×${x.reps}</div></div>
+      <div class="grid-head"><span>組</span><span>重量</span><span>次數</span><span>RPE</span><span>✓</span></div>
+      ${rows}`;
+    list.appendChild(card);
+  });
+  buildBreakdown();
+  updateStats(false);
+}
+
+function counts(){const m=MENUS[sel];let total=0,d=0;m.ex.forEach((x,ei)=>{for(let si=0;si<(+x.sets||0);si++){total++;if(done[ei+'-'+si])d++;}});return {total,d};}
+function tonnage(){const m=MENUS[sel];let t=0;m.ex.forEach((x,ei)=>{for(let si=0;si<(+x.sets||0);si++){if(done[ei+'-'+si])t+=(+x.w||0)*(+x.reps||0);}});return t;}
+function partVolumes(){
+  const m=MENUS[sel];const planned={},doneV={};
+  m.ex.forEach((x,ei)=>{const p=x.part||'其他';const per=(+x.w||0)*(+x.reps||0);
+    for(let si=0;si<(+x.sets||0);si++){planned[p]=(planned[p]||0)+per;if(done[ei+'-'+si])doneV[p]=(doneV[p]||0)+per;}});
+  return {planned,doneV};
+}
+
+function buildBreakdown(){
+  const {planned}=partVolumes();
+  const present=PARTS.filter(p=>planned[p]>0);
+  const others=Object.keys(planned).filter(p=>!PARTS.includes(p));
+  curParts=[...present,...others];
+  let html=`<div class="bl">部位訓練量 · BY MUSCLE</div>`;
+  curParts.forEach(p=>{
+    html+=`<div class="bd-row" data-part="${p}">
+      <div class="bd-part">${p}</div>
+      <div class="bd-track"><div class="bd-fill"></div></div>
+      <div class="bd-val"><b>0</b> kg</div>
+    </div>`;
+  });
+  document.getElementById('breakdown').innerHTML=html;
+}
+function updateBreakdown(){
+  const {planned,doneV}=partVolumes();
+  const maxP=Math.max(1,...curParts.map(p=>planned[p]||0));
+  curParts.forEach(p=>{
+    const row=document.querySelector(`.bd-row[data-part="${p}"]`);if(!row)return;
+    const dv=Math.round(doneV[p]||0);
+    row.querySelector('.bd-fill').style.width=Math.min(100,(dv/maxP)*100)+'%';
+    row.querySelector('.bd-val').innerHTML=`<b>${dv.toLocaleString()}</b> kg`;
+  });
+}
+
+function animateNumber(id,from,to,dur){
+  const el=document.getElementById(id);const t0=performance.now();from=+from||0;to=+to||0;
+  function step(now){let p=Math.min(1,(now-t0)/dur);p=1-Math.pow(1-p,3);
+    el.textContent=Math.round(from+(to-from)*p).toLocaleString();
+    if(p<1)requestAnimationFrame(step);}
+  requestAnimationFrame(step);
+}
+
+function updateStats(animate){
+  const t=tonnage(),c=counts();
+  if(animate&&t!==curTon)animateNumber('tonnage',curTon,t,420);
+  else document.getElementById('tonnage').textContent=Math.round(t).toLocaleString();
+  curTon=t;
+  document.getElementById('doneStat').innerHTML=c.d+'<small> / '+c.total+' 組</small>';
+  document.getElementById('pDone').textContent=c.d;
+  document.getElementById('pTotal').textContent=c.total;
+  updateBreakdown();
+  resetDoneBtn();
+}
+
+function toggle(ei,si){
+  const k=ei+'-'+si;done[k]=!done[k];
+  const row=document.querySelector(`.set-row[data-k="${k}"]`);
+  if(row)row.classList.toggle('done',!!done[k]);
+  updateStats(true);
+}
+function setRpe(ei,si,v){rpe[ei+'-'+si]=v;}
+function resetDoneBtn(){const b=document.getElementById('doneBtn');b.classList.remove('ok');b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 13l4 4L19 7"/></svg>完成`;document.getElementById('toast').className='toast';}
+
+function complete(){
+  const m=MENUS[sel];const n=new Date();
+  const yy=String(n.getFullYear()).slice(2);const mm=String(n.getMonth()+1).padStart(2,'0');const dd=String(n.getDate()).padStart(2,'0');
+  const dateFull=`${n.getFullYear()}-${mm}-${dd}`;const fname=`${yy}${mm}${dd}-workout-results.csv`;
+  const toast=document.getElementById('toast');
+  let rows=[['日期','菜單','動作','部位','組','重量','次數','RPE']];
+  m.ex.forEach((x,ei)=>{for(let si=0;si<(+x.sets||0);si++){if(done[ei+'-'+si]){
+    rows.push([dateFull,m.name,x.name,x.part||'',si+1,x.w,x.reps,rpe[ei+'-'+si]||'']);}}});
+  if(rows.length===1){toast.textContent='還沒有勾選任何組';toast.className='toast show err';return;}
+  const csv='\uFEFF'+rows.map(r=>r.join(',')).join('\n');
+  try{const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=fname;a.click();URL.revokeObjectURL(url);}catch(e){}
+  const b=document.getElementById('doneBtn');b.classList.add('ok');b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 13l4 4L19 7"/></svg>已完成`;
+  toast.textContent=`已下載 ${fname}（${rows.length-1} 組）`;toast.className='toast show';
+}
+
+(function(){const wk=['日','一','二','三','四','五','六'];const n=new Date();document.getElementById('date').textContent=`${n.getMonth()+1}/${n.getDate()} (${wk[n.getDay()]})`;})();
+
+// ---- localStorage 資料層：讀回已儲存的真實菜單 ----
+(function loadMenus(){
+  try{const raw=localStorage.getItem('ironlog.menus');if(raw){const p=JSON.parse(raw);if(Array.isArray(p))MENUS=p;}}catch(e){}
+})();
+
+function renderEmpty(){
+  document.getElementById('chips').innerHTML='';
+  document.getElementById('breakdown').innerHTML='';
+  document.getElementById('tonnage').textContent='0';
+  document.getElementById('doneStat').innerHTML='0<small> / 0 組</small>';
+  document.getElementById('pDone').textContent='0';
+  document.getElementById('pTotal').textContent='0';
+  document.getElementById('exList').innerHTML=`
+    <div class="exercise reveal" style="padding:34px 22px;text-align:center;animation-delay:.16s">
+      <div style="font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--faint);text-transform:uppercase;margin-bottom:11px">NO MENU</div>
+      <div style="font-size:16px;font-weight:800;margin-bottom:6px">尚未建立菜單</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:20px">先到菜單頁面設定你的訓練內容</div>
+      <a class="nav-btn" href="ironlog-menu.html" style="display:inline-flex">前往菜單頁面
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>`;
+}
+
+function boot(){
+  if(!Array.isArray(MENUS)||!MENUS.length){renderEmpty();return;}
+  if(sel>=MENUS.length)sel=0;
+  renderChips();renderMenu();
+}
+boot();
+</script>
+</body>
+</html>
