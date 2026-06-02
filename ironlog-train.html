@@ -194,14 +194,14 @@ let MENUS=[
     {name:"槓鈴划船",part:"背",w:65,sets:3,reps:10}]}
 ];
 
-let sel=0, done={}, rpe={}, wgt={}, curTon=0, curParts=[];
+let sel=0, done={}, rpe={}, wgt={}, rps={}, curTon=0, curParts=[];
 
 function renderChips(){
   const c=document.getElementById('chips');c.innerHTML='';
   MENUS.forEach((m,i)=>{
     const el=document.createElement('div');
     el.className='chip'+(i===sel?' active':'');
-    el.onclick=()=>{sel=i;done={};rpe={};wgt={};curTon=0;renderMenu();renderChips();};
+    el.onclick=()=>{sel=i;done={};rpe={};wgt={};rps={};curTon=0;renderMenu();renderChips();};
     el.innerHTML=`<div class="cn">${m.name}</div><div class="cm">${m.ex.length} 動作</div>`;
     c.appendChild(el);
   });
@@ -219,7 +219,7 @@ function renderMenu(){
       rows+=`<div class="set-row ${isDone?'done':''}" data-k="${k}">
         <div class="set-no">${si+1}</div>
         <div class="cell wcell"><input inputmode="decimal" value="${wgt[k]!=null&&wgt[k]!==''?wgt[k]:x.w}" onchange="setW(${ei},${si},this.value)"><span class="wu">kg</span></div>
-        <div class="val">${x.reps}<small>次</small></div>
+        <div class="cell wcell"><input inputmode="numeric" value="${rps[k]!=null&&rps[k]!==''?rps[k]:x.reps}" onchange="setR(${ei},${si},this.value)"><span class="wu">次</span></div>
         <div class="cell"><input inputmode="decimal" placeholder="—" value="${rpe[k]||''}" onchange="setRpe(${ei},${si},this.value)"></div>
         <div class="check" onclick="toggle(${ei},${si})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 13l4 4L19 7"/></svg></div>
       </div>`;
@@ -234,14 +234,15 @@ function renderMenu(){
   updateStats(false);
 }
 
-// 取得某一組的重量：使用者填寫值優先，否則用菜單預設
+// 取得某一組的重量／次數：使用者填寫值優先，否則用菜單預設
 function getW(ei,si,x){const v=wgt[ei+'-'+si];return v!=null&&v!==''?(+v||0):(+x.w||0);}
+function getR(ei,si,x){const v=rps[ei+'-'+si];return v!=null&&v!==''?(+v||0):(+x.reps||0);}
 function counts(){const m=MENUS[sel];let total=0,d=0;m.ex.forEach((x,ei)=>{for(let si=0;si<(+x.sets||0);si++){total++;if(done[ei+'-'+si])d++;}});return {total,d};}
-function tonnage(){const m=MENUS[sel];let t=0;m.ex.forEach((x,ei)=>{for(let si=0;si<(+x.sets||0);si++){if(done[ei+'-'+si])t+=getW(ei,si,x)*(+x.reps||0);}});return t;}
+function tonnage(){const m=MENUS[sel];let t=0;m.ex.forEach((x,ei)=>{for(let si=0;si<(+x.sets||0);si++){if(done[ei+'-'+si])t+=getW(ei,si,x)*getR(ei,si,x);}});return t;}
 function partVolumes(){
   const m=MENUS[sel];const planned={},doneV={};
   m.ex.forEach((x,ei)=>{const p=x.part||'其他';
-    for(let si=0;si<(+x.sets||0);si++){const per=getW(ei,si,x)*(+x.reps||0);planned[p]=(planned[p]||0)+per;if(done[ei+'-'+si])doneV[p]=(doneV[p]||0)+per;}});
+    for(let si=0;si<(+x.sets||0);si++){const per=getW(ei,si,x)*getR(ei,si,x);planned[p]=(planned[p]||0)+per;if(done[ei+'-'+si])doneV[p]=(doneV[p]||0)+per;}});
   return {planned,doneV};
 }
 
@@ -299,6 +300,7 @@ function toggle(ei,si){
 }
 function setRpe(ei,si,v){rpe[ei+'-'+si]=v;}
 function setW(ei,si,v){wgt[ei+'-'+si]=v;updateStats(true);}
+function setR(ei,si,v){rps[ei+'-'+si]=v;updateStats(true);}
 function resetDoneBtn(){const b=document.getElementById('doneBtn');b.classList.remove('ok');b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 13l4 4L19 7"/></svg>完成`;document.getElementById('toast').className='toast';}
 
 function complete(){
@@ -308,7 +310,7 @@ function complete(){
   const toast=document.getElementById('toast');
   let rows=[['日期','菜單','動作','部位','組','重量','次數','RPE']];
   m.ex.forEach((x,ei)=>{for(let si=0;si<(+x.sets||0);si++){if(done[ei+'-'+si]){
-    rows.push([dateFull,m.name,x.name,x.part||'',si+1,getW(ei,si,x),x.reps,rpe[ei+'-'+si]||'']);}}});
+    rows.push([dateFull,m.name,x.name,x.part||'',si+1,getW(ei,si,x),getR(ei,si,x),rpe[ei+'-'+si]||'']);}}});
   if(rows.length===1){toast.textContent='還沒有勾選任何組';toast.className='toast show err';return;}
   const csv='\uFEFF'+rows.map(r=>r.join(',')).join('\n');
   try{const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=fname;a.click();URL.revokeObjectURL(url);}catch(e){}
