@@ -99,6 +99,9 @@
   .cell{display:flex;align-items:center;justify-content:center;background:var(--surface-2);border:1px solid var(--line);border-radius:9px;height:40px;transition:border-color .15s}
   .cell:focus-within{border-color:var(--accent)}
   .cell input{width:100%;background:none;border:none;color:var(--text);font-family:var(--mono);font-size:15px;font-weight:700;text-align:center;outline:none;min-width:0}
+  .wcell{gap:3px}
+  .wcell input{width:auto;flex:0 1 auto;max-width:46px;text-align:right}
+  .wu{font-family:var(--mono);font-size:10px;color:var(--faint);font-weight:500;flex-shrink:0}
   .check{width:40px;height:40px;border-radius:10px;border:1px solid var(--line-strong);background:var(--surface-2);display:grid;place-items:center;cursor:pointer;color:var(--faint);
     transition:background-color .25s ease, border-color .25s ease, color .25s ease, transform .12s ease}
   .check svg{width:18px;height:18px;stroke-width:3;transition:transform .25s cubic-bezier(.34,1.56,.64,1);transform:scale(.7);opacity:.5}
@@ -191,14 +194,14 @@ let MENUS=[
     {name:"槓鈴划船",part:"背",w:65,sets:3,reps:10}]}
 ];
 
-let sel=0, done={}, rpe={}, curTon=0, curParts=[];
+let sel=0, done={}, rpe={}, wgt={}, curTon=0, curParts=[];
 
 function renderChips(){
   const c=document.getElementById('chips');c.innerHTML='';
   MENUS.forEach((m,i)=>{
     const el=document.createElement('div');
     el.className='chip'+(i===sel?' active':'');
-    el.onclick=()=>{sel=i;done={};rpe={};curTon=0;renderMenu();renderChips();};
+    el.onclick=()=>{sel=i;done={};rpe={};wgt={};curTon=0;renderMenu();renderChips();};
     el.innerHTML=`<div class="cn">${m.name}</div><div class="cm">${m.ex.length} 動作</div>`;
     c.appendChild(el);
   });
@@ -215,7 +218,7 @@ function renderMenu(){
       const k=ei+'-'+si, isDone=done[k];
       rows+=`<div class="set-row ${isDone?'done':''}" data-k="${k}">
         <div class="set-no">${si+1}</div>
-        <div class="val">${x.w}<small>kg</small></div>
+        <div class="cell wcell"><input inputmode="decimal" value="${wgt[k]!=null&&wgt[k]!==''?wgt[k]:x.w}" onchange="setW(${ei},${si},this.value)"><span class="wu">kg</span></div>
         <div class="val">${x.reps}<small>次</small></div>
         <div class="cell"><input inputmode="decimal" placeholder="—" value="${rpe[k]||''}" onchange="setRpe(${ei},${si},this.value)"></div>
         <div class="check" onclick="toggle(${ei},${si})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 13l4 4L19 7"/></svg></div>
@@ -231,12 +234,14 @@ function renderMenu(){
   updateStats(false);
 }
 
+// 取得某一組的重量：使用者填寫值優先，否則用菜單預設
+function getW(ei,si,x){const v=wgt[ei+'-'+si];return v!=null&&v!==''?(+v||0):(+x.w||0);}
 function counts(){const m=MENUS[sel];let total=0,d=0;m.ex.forEach((x,ei)=>{for(let si=0;si<(+x.sets||0);si++){total++;if(done[ei+'-'+si])d++;}});return {total,d};}
-function tonnage(){const m=MENUS[sel];let t=0;m.ex.forEach((x,ei)=>{for(let si=0;si<(+x.sets||0);si++){if(done[ei+'-'+si])t+=(+x.w||0)*(+x.reps||0);}});return t;}
+function tonnage(){const m=MENUS[sel];let t=0;m.ex.forEach((x,ei)=>{for(let si=0;si<(+x.sets||0);si++){if(done[ei+'-'+si])t+=getW(ei,si,x)*(+x.reps||0);}});return t;}
 function partVolumes(){
   const m=MENUS[sel];const planned={},doneV={};
-  m.ex.forEach((x,ei)=>{const p=x.part||'其他';const per=(+x.w||0)*(+x.reps||0);
-    for(let si=0;si<(+x.sets||0);si++){planned[p]=(planned[p]||0)+per;if(done[ei+'-'+si])doneV[p]=(doneV[p]||0)+per;}});
+  m.ex.forEach((x,ei)=>{const p=x.part||'其他';
+    for(let si=0;si<(+x.sets||0);si++){const per=getW(ei,si,x)*(+x.reps||0);planned[p]=(planned[p]||0)+per;if(done[ei+'-'+si])doneV[p]=(doneV[p]||0)+per;}});
   return {planned,doneV};
 }
 
@@ -293,6 +298,7 @@ function toggle(ei,si){
   updateStats(true);
 }
 function setRpe(ei,si,v){rpe[ei+'-'+si]=v;}
+function setW(ei,si,v){wgt[ei+'-'+si]=v;updateStats(true);}
 function resetDoneBtn(){const b=document.getElementById('doneBtn');b.classList.remove('ok');b.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 13l4 4L19 7"/></svg>完成`;document.getElementById('toast').className='toast';}
 
 function complete(){
@@ -302,7 +308,7 @@ function complete(){
   const toast=document.getElementById('toast');
   let rows=[['日期','菜單','動作','部位','組','重量','次數','RPE']];
   m.ex.forEach((x,ei)=>{for(let si=0;si<(+x.sets||0);si++){if(done[ei+'-'+si]){
-    rows.push([dateFull,m.name,x.name,x.part||'',si+1,x.w,x.reps,rpe[ei+'-'+si]||'']);}}});
+    rows.push([dateFull,m.name,x.name,x.part||'',si+1,getW(ei,si,x),x.reps,rpe[ei+'-'+si]||'']);}}});
   if(rows.length===1){toast.textContent='還沒有勾選任何組';toast.className='toast show err';return;}
   const csv='\uFEFF'+rows.map(r=>r.join(',')).join('\n');
   try{const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=fname;a.click();URL.revokeObjectURL(url);}catch(e){}
