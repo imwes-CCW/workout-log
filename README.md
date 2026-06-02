@@ -1,6 +1,8 @@
-# 鐵記 · IRONLOG
+# 我紀 · MyLog
 
-單人健身記錄工具，純靜態（HTML + 原生 JS），部署於 GitHub Pages。資料以 `localStorage` 持久化於瀏覽器本機，無後端。
+「我的紀律」——單人健身記錄工具，純靜態（HTML + 原生 JS），部署於 GitHub Pages。資料以 `localStorage` 持久化於瀏覽器本機，無後端。
+
+暖米紙基底，點左上角的 **W** 圖標可輪替重點色（陶土磚紅 → 橄欖軍綠 → 焦糖芥末 → 墨黛藍），選擇存於 `localStorage`（key `mylog.accent`），兩頁共用、重新整理後維持。
 
 ## 頁面
 - `index.html` — 入口，轉址到訓練頁
